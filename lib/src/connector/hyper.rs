@@ -128,9 +128,9 @@ impl<C: Connect + std::fmt::Debug + 'static + Clone + Send + Sync> Connector for
                             .parse()
                             .map_err(HttpError::from)
                             .map_err(ErrorKind::from)?;
-                    http_request.headers_mut().map(move |headers| {
+                    if let Some(headers) = http_request.headers_mut() {
                         headers.insert(CONTENT_TYPE, content_type);
-                    });
+                    }
 
                     let mut bytes = Vec::new();
                     prepared.read_to_end(&mut bytes).map_err(ErrorKind::from)?;

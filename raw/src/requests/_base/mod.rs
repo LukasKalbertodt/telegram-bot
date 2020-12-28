@@ -1,3 +1,4 @@
+#[allow(clippy::module_inception)]
 mod _base;
 pub use self::_base::*;
 

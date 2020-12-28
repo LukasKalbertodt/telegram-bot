@@ -32,7 +32,7 @@
 #[macro_export]
 macro_rules! reply_markup {
     (remove_keyboard) => ({
-          $crate::ReplyKeyboardRemove::new()
+          $crate::ReplyKeyboardRemove::default()
     });
 
     (remove_keyboard, selective) => ({
@@ -42,7 +42,7 @@ macro_rules! reply_markup {
     });
 
     (force_reply) => ({
-          $crate::ForceReply::new()
+          $crate::ForceReply::default()
     });
 
     (force_reply, selective) => ({
@@ -130,13 +130,13 @@ mod tests {
 
     #[test]
     fn test_simple() {
-        let mut remove_keyboard = ReplyKeyboardRemove::new();
+        let mut remove_keyboard = ReplyKeyboardRemove::default();
         assert_eq!(remove_keyboard, reply_markup!(remove_keyboard));
 
         remove_keyboard.selective();
         assert_eq!(remove_keyboard, reply_markup!(remove_keyboard, selective));
 
-        let mut force_reply = ForceReply::new();
+        let mut force_reply = ForceReply::default();
         assert_eq!(force_reply, reply_markup!(force_reply));
 
         force_reply.selective();
@@ -145,7 +145,7 @@ mod tests {
 
     #[test]
     fn test_reply_keyboard() {
-        let mut keyboard = ReplyKeyboardMarkup::new();
+        let mut keyboard = ReplyKeyboardMarkup::default();
         assert_eq!(keyboard, reply_markup!(reply_keyboard,));
 
         keyboard.add_empty_row();
@@ -232,7 +232,7 @@ mod tests {
 
     #[test]
     fn test_inline_keyboard() {
-        let mut markup = InlineKeyboardMarkup::new();
+        let mut markup = InlineKeyboardMarkup::default();
         assert_eq!(markup, reply_markup!(inline_keyboard,));
 
         markup.add_empty_row();

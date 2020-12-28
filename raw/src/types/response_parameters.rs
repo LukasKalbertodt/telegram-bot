@@ -27,10 +27,10 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for ResponseWrapper<T> {
         let raw: RawResponse<T> = Deserialize::deserialize(deserializer)?;
         match (raw.ok, raw.description, raw.result) {
             (false, Some(description), None) => Ok(ResponseWrapper::Error {
-                description: description,
+                description,
                 parameters: raw.parameters,
             }),
-            (true, None, Some(result)) => Ok(ResponseWrapper::Success { result: result }),
+            (true, None, Some(result)) => Ok(ResponseWrapper::Success { result }),
             _ => Err(D::Error::custom("ambiguous response")),
         }
     }

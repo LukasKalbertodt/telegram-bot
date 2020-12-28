@@ -21,7 +21,7 @@ impl<Request: ToMultipart> RequestType for MultipartRequestType<Request> {
         let multipart = request.to_multipart()?;
 
         Ok(HttpRequest {
-            url: url,
+            url,
             method: Method::Post,
             body: Body::Multipart(multipart),
         })

@@ -2,7 +2,7 @@ use crate::requests::*;
 use crate::types::*;
 
 /// Use this method to receive incoming updates using long polling.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Default)]
 #[must_use = "requests do nothing unless sent"]
 pub struct GetUpdates {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -25,12 +25,7 @@ impl Request for GetUpdates {
 
 impl GetUpdates {
     pub fn new() -> Self {
-        GetUpdates {
-            offset: None,
-            limit: None,
-            timeout: None,
-            allowed_updates: Vec::new(),
-        }
+        Self::default()
     }
 
     pub fn offset(&mut self, offset: Integer) -> &mut Self {

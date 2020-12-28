@@ -53,18 +53,24 @@ pub struct ReplyKeyboardMarkup {
     selective: bool,
 }
 
-impl ReplyKeyboardMarkup {
-    pub fn new() -> Self {
-        ReplyKeyboardMarkup {
+impl Default for ReplyKeyboardMarkup {
+    fn default() -> Self {
+        Self {
             keyboard: Vec::new(),
             resize_keyboard: false,
             one_time_keyboard: false,
             selective: false,
         }
     }
+}
+
+impl ReplyKeyboardMarkup {
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     fn init(rows: Vec<Vec<KeyboardButton>>) -> Self {
-        let mut keyboard = Self::new();
+        let mut keyboard = Self::default();
         keyboard.keyboard = rows;
         keyboard
     }
@@ -173,14 +179,19 @@ pub struct ReplyKeyboardRemove {
     selective: bool,
 }
 
-impl ReplyKeyboardRemove {
-    pub fn new() -> Self {
+impl Default for ReplyKeyboardRemove {
+    fn default() -> Self {
         Self {
             remove_keyboard: True,
             selective: false,
         }
     }
+}
 
+impl ReplyKeyboardRemove {
+    pub fn new() -> Self {
+        Self::default()
+    }
     /// Use this method if you want to force reply from specific users only.
     /// Targets: 1) users that are @mentioned in the text of
     /// the Message object; 2) if the bot's message is a reply (has reply_to_message_id),
@@ -192,18 +203,15 @@ impl ReplyKeyboardRemove {
 }
 
 /// This object represents an inline keyboard that appears right next to the message it belongs to.
-#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Default)]
 pub struct InlineKeyboardMarkup {
     inline_keyboard: Vec<Vec<InlineKeyboardButton>>,
 }
 
 impl InlineKeyboardMarkup {
     pub fn new() -> Self {
-        Self {
-            inline_keyboard: Default::default(),
-        }
+        Self::default()
     }
-
     fn init(inline_keyboard: Vec<Vec<InlineKeyboardButton>>) -> Self {
         Self { inline_keyboard }
     }
@@ -305,14 +313,19 @@ pub struct ForceReply {
     selective: bool,
 }
 
-impl ForceReply {
-    pub fn new() -> Self {
+impl Default for ForceReply {
+    fn default() -> Self {
         Self {
             force_reply: True,
             selective: false,
         }
     }
+}
 
+impl ForceReply {
+    pub fn new() -> Self {
+        Self::default()
+    }
     /// Use this method if you want to force reply from specific users only.
     /// Targets: 1) users that are @mentioned in the text of
     /// the Message object; 2) if the bot's message is a reply (has reply_to_message_id),

@@ -15,6 +15,7 @@ pub use telegram_bot_raw::{CanGetChatMemberForChat, CanGetChatMemberForUser};
 pub use telegram_bot_raw::{CanGetFile, CanGetUserProfilePhotos};
 pub use telegram_bot_raw::{CanKickChatMemberForChat, CanKickChatMemberForUser};
 pub use telegram_bot_raw::{CanPinMessage, CanUnpinMessage};
+pub use telegram_bot_raw::{CanReplySendAnimation, CanSendAnimation};
 pub use telegram_bot_raw::{CanReplySendAudio, CanSendAudio};
 pub use telegram_bot_raw::{CanReplySendContact, CanSendContact};
 pub use telegram_bot_raw::{CanReplySendDocument, CanSendDocument};

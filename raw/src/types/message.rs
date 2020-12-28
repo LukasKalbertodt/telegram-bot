@@ -91,6 +91,15 @@ pub enum MessageKind {
         /// Special entities like usernames, URLs, bot commands, etc. that appear in the text
         entities: Vec<MessageEntity>,
     },
+    /// Message is an animation.
+    Animation {
+        /// Information about the animation.
+        data: Animation,
+        /// Caption for the animation, 0-200 characters.
+        caption: Option<String>,
+        /// The unique identifier of a media message group this message belongs to.
+        media_group_id: Option<String>,
+    },
     /// Message is an audio file.
     Audio {
         /// Information about the file.
@@ -208,7 +217,7 @@ pub enum MessageKind {
         data: Box<MessageOrChannelPost>,
     },
     #[doc(hidden)]
-    Unknown { raw: RawMessage },
+    Unknown { raw: Box<RawMessage> },
 }
 
 impl Message {
@@ -216,7 +225,7 @@ impl Message {
         let id = raw.message_id;
         let from = match raw.from.clone() {
             Some(from) => from,
-            None => return Err(format!("Missing `from` field for Message")),
+            None => return Err("Missing `from` field for Message".into()),
         };
         let date = raw.date;
         let chat = match raw.chat.clone() {
@@ -224,7 +233,7 @@ impl Message {
             Chat::Group(x) => MessageChat::Group(x),
             Chat::Supergroup(x) => MessageChat::Supergroup(x),
             Chat::Unknown(x) => MessageChat::Unknown(x),
-            Chat::Channel(_) => return Err(format!("Channel chat in Message")),
+            Chat::Channel(_) => return Err("Channel chat in Message".into()),
         };
 
         let reply_to_message = raw.reply_to_message.clone();
@@ -239,15 +248,15 @@ impl Message {
         ) {
             (None, &None, &None, None, &None) => None,
             (Some(date), &Some(ref from), &None, None, &None) => Some(Forward {
-                date: date,
+                date,
                 from: ForwardFrom::User { user: from.clone() },
             }),
             (Some(date), &None, &Some(Chat::Channel(ref channel)), Some(message_id), &None) => {
                 Some(Forward {
-                    date: date,
+                    date,
                     from: ForwardFrom::Channel {
                         channel: channel.clone(),
-                        message_id: message_id,
+                        message_id,
                     },
                 })
             }
@@ -257,19 +266,19 @@ impl Message {
                     sender_name: sender_name.clone(),
                 },
             }),
-            _ => return Err(format!("invalid forward fields combination")),
+            _ => return Err("invalid forward fields combination".into()),
         };
 
         let make_message = |kind| {
             Ok(Message {
                 id: id.into(),
-                from: from,
-                date: date,
-                chat: chat,
-                forward: forward,
-                reply_to_message: reply_to_message,
-                edit_date: edit_date,
-                kind: kind,
+                from,
+                date,
+                chat,
+                forward,
+                reply_to_message,
+                edit_date,
+                kind,
             })
         };
 
@@ -316,10 +325,11 @@ impl Message {
             let entities = raw.entities.unwrap_or_else(Vec::new);
             return make_message(MessageKind::Text {
                 data: text,
-                entities: entities,
+                entities,
             });
         }
 
+        maybe_field_with_caption_and_group!(animation, Animation);
         maybe_field!(audio, Audio);
         maybe_field_with_caption!(document, Document);
         maybe_field_with_caption_and_group!(photo, Photo);
@@ -344,7 +354,7 @@ impl Message {
         maybe_field!(migrate_from_chat_id, MigrateFromChatId);
         maybe_field!(pinned_message, PinnedMessage);
 
-        make_message(MessageKind::Unknown { raw: raw })
+        make_message(MessageKind::Unknown { raw: Box::new(raw) })
     }
 }
 
@@ -355,7 +365,7 @@ impl<'de> Deserialize<'de> for Message {
     {
         let raw: RawMessage = Deserialize::deserialize(deserializer)?;
 
-        Self::from_raw_message(raw).map_err(|err| D::Error::custom(err))
+        Self::from_raw_message(raw).map_err(D::Error::custom)
     }
 }
 
@@ -365,7 +375,7 @@ impl ChannelPost {
         let date = raw.date;
         let chat = match raw.chat.clone() {
             Chat::Channel(channel) => channel,
-            _ => return Err(format!("Expected channel chat type for ChannelMessage")),
+            _ => return Err("Expected channel chat type for ChannelMessage".into()),
         };
         let reply_to_message = raw.reply_to_message.clone();
         let edit_date = raw.edit_date;
@@ -379,15 +389,15 @@ impl ChannelPost {
         ) {
             (None, &None, &None, None, &None) => None,
             (Some(date), &Some(ref from), &None, None, &None) => Some(Forward {
-                date: date,
+                date,
                 from: ForwardFrom::User { user: from.clone() },
             }),
             (Some(date), &None, &Some(Chat::Channel(ref channel)), Some(message_id), &None) => {
                 Some(Forward {
-                    date: date,
+                    date,
                     from: ForwardFrom::Channel {
                         channel: channel.clone(),
-                        message_id: message_id,
+                        message_id,
                     },
                 })
             }
@@ -397,18 +407,18 @@ impl ChannelPost {
                     sender_name: sender_name.clone(),
                 },
             }),
-            _ => return Err(format!("invalid forward fields combination")),
+            _ => return Err("invalid forward fields combination".into()),
         };
 
         let make_message = |kind| {
             Ok(ChannelPost {
                 id: id.into(),
-                date: date,
-                chat: chat,
-                forward: forward,
-                reply_to_message: reply_to_message,
-                edit_date: edit_date,
-                kind: kind,
+                date,
+                chat,
+                forward,
+                reply_to_message,
+                edit_date,
+                kind,
             })
         };
 
@@ -455,10 +465,11 @@ impl ChannelPost {
             let entities = raw.entities.unwrap_or_else(Vec::new);
             return make_message(MessageKind::Text {
                 data: text,
-                entities: entities,
+                entities,
             });
         }
 
+        maybe_field_with_caption_and_group!(animation, Animation);
         maybe_field!(audio, Audio);
         maybe_field_with_caption!(document, Document);
         maybe_field_with_caption_and_group!(photo, Photo);
@@ -483,7 +494,7 @@ impl ChannelPost {
         maybe_field!(migrate_from_chat_id, MigrateFromChatId);
         maybe_field!(pinned_message, PinnedMessage);
 
-        make_message(MessageKind::Unknown { raw: raw })
+        make_message(MessageKind::Unknown { raw: Box::new(raw) })
     }
 }
 
@@ -495,7 +506,7 @@ impl<'de> Deserialize<'de> for ChannelPost {
     {
         let raw: RawMessage = Deserialize::deserialize(deserializer)?;
 
-        Self::from_raw_message(raw).map_err(|err| D::Error::custom(err))
+        Self::from_raw_message(raw).map_err(D::Error::custom)
     }
 }
 
@@ -506,10 +517,7 @@ impl<'de> Deserialize<'de> for MessageOrChannelPost {
         D: Deserializer<'de>,
     {
         let raw: RawMessage = Deserialize::deserialize(deserializer)?;
-        let is_channel = match raw.chat {
-            Chat::Channel(_) => true,
-            _ => false,
-        };
+        let is_channel = matches!(raw.chat, Chat::Channel(_));
 
         let res = if is_channel {
             ChannelPost::from_raw_message(raw).map(MessageOrChannelPost::ChannelPost)
@@ -517,7 +525,7 @@ impl<'de> Deserialize<'de> for MessageOrChannelPost {
             Message::from_raw_message(raw).map(MessageOrChannelPost::Message)
         };
 
-        res.map_err(|err| D::Error::custom(err))
+        res.map_err(D::Error::custom)
     }
 }
 
@@ -552,6 +560,8 @@ pub struct RawMessage {
     /// For text messages, special entities like usernames, URLs, bot commands, etc.
     /// that appear in the text.
     pub entities: Option<Vec<MessageEntity>>,
+    /// Message is an animation file, information about the file.
+    pub animation: Option<Animation>,
     /// Message is an audio file, information about the file.
     pub audio: Option<Audio>,
     /// Message is a general file, information about the file.
@@ -679,9 +689,9 @@ impl<'de> Deserialize<'de> for MessageEntity {
         };
 
         Ok(MessageEntity {
-            offset: offset,
-            length: length,
-            kind: kind,
+            offset,
+            length,
+            kind,
         })
     }
 }
@@ -714,6 +724,25 @@ pub struct PhotoSize {
     pub width: Integer,
     /// Photo height.
     pub height: Integer,
+    /// File size.
+    pub file_size: Option<Integer>,
+}
+
+/// This object represents a animation file.
+#[derive(Debug, Clone, PartialEq, PartialOrd, Deserialize)]
+pub struct Animation {
+    /// Unique identifier for this file.
+    pub file_id: String,
+    /// Video width as defined by sender.
+    pub width: Integer,
+    /// Video height as defined by sender.
+    pub height: Integer,
+    /// Duration of the video in seconds as defined by sender.
+    pub duration: Integer,
+    /// Video thumbnail.
+    pub thumb: Option<PhotoSize>,
+    /// Mime type of a file as defined by sender.
+    pub mime_type: Option<String>,
     /// File size.
     pub file_size: Option<Integer>,
 }

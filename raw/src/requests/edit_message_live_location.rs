@@ -30,11 +30,11 @@ impl EditMessageLiveLocation {
         C: ToChatRef,
         M: ToMessageId,
     {
-        EditMessageLiveLocation {
+        Self {
             chat_id: chat.to_chat_ref(),
             message_id: message_id.to_message_id(),
-            latitude: latitude,
-            longitude: longitude,
+            latitude,
+            longitude,
             reply_markup: None,
         }
     }

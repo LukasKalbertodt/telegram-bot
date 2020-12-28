@@ -10,6 +10,8 @@ pub enum ChatAction {
     Typing,
     #[serde(rename = "upload_photo")]
     UploadPhoto,
+    #[serde(rename = "upload_animation")]
+    UploadAnimation,
     #[serde(rename = "record_video")]
     RecordVideo,
     #[serde(rename = "upload_video")]
@@ -47,9 +49,9 @@ impl SendChatAction {
     where
         C: ToChatRef,
     {
-        SendChatAction {
+        Self {
             chat_id: chat.to_chat_ref(),
-            action: action,
+            action,
         }
     }
 }

@@ -39,10 +39,10 @@ impl<'t, 'a, 'f> SendVenue<'t, 'a, 'f> {
         T: Into<Cow<'t, str>>,
         A: Into<Cow<'a, str>>,
     {
-        SendVenue {
+        Self {
             chat_id: chat.to_chat_ref(),
-            latitude: latitude,
-            longitude: longitude,
+            latitude,
+            longitude,
             title: title.into(),
             address: address.into(),
             disable_notification: false,

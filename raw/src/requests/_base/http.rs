@@ -17,7 +17,7 @@ impl RequestUrl {
 
     pub fn url(&self, token: &str) -> String {
         match self {
-            &RequestUrl::Method(method) => format!("{}bot{}/{}", telegram_api_url(), token, method),
+            RequestUrl::Method(method) => format!("{}bot{}/{}", telegram_api_url(), token, method),
         }
     }
 }
@@ -38,12 +38,11 @@ pub enum MultipartValue {
 pub type Multipart = Vec<(&'static str, MultipartValue)>;
 
 #[derive(Debug, Clone, PartialEq, PartialOrd, Eq, Ord, Hash)]
+#[non_exhaustive]
 pub enum Body {
     Empty,
     Multipart(Multipart),
     Json(String),
-    #[doc(hidden)]
-    __Nonexhaustive,
 }
 
 impl fmt::Display for Body {
@@ -52,7 +51,6 @@ impl fmt::Display for Body {
             Body::Empty => "<empty body>".fmt(f),
             Body::Multipart(multipart) => write!(f, "{:?}", multipart),
             Body::Json(s) => s.fmt(f),
-            Body::__Nonexhaustive => unreachable!(),
         }
     }
 }

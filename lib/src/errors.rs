@@ -1,8 +1,6 @@
 use std::error;
 use std::fmt;
 
-use telegram_bot_raw;
-
 #[derive(Debug)]
 pub struct Error(ErrorKind);
 

@@ -82,8 +82,8 @@ impl ToSourceChat for ChannelPost {
 impl ToSourceChat for MessageOrChannelPost {
     fn to_source_chat(&self) -> ChatId {
         match self {
-            &MessageOrChannelPost::Message(ref message) => message.to_source_chat(),
-            &MessageOrChannelPost::ChannelPost(ref channel_post) => channel_post.to_source_chat(),
+            MessageOrChannelPost::Message(ref message) => message.to_source_chat(),
+            MessageOrChannelPost::ChannelPost(ref channel_post) => channel_post.to_source_chat(),
         }
     }
 }
@@ -305,8 +305,8 @@ impl ToMessageId for ChannelPost {
 impl ToMessageId for MessageOrChannelPost {
     fn to_message_id(&self) -> MessageId {
         match self {
-            &MessageOrChannelPost::Message(ref message) => message.to_message_id(),
-            &MessageOrChannelPost::ChannelPost(ref channel_post) => channel_post.to_message_id(),
+            MessageOrChannelPost::Message(ref message) => message.to_message_id(),
+            MessageOrChannelPost::ChannelPost(ref channel_post) => channel_post.to_message_id(),
         }
     }
 }
@@ -342,6 +342,7 @@ macro_rules! file_id_impls {
 }
 
 file_id_impls!(PhotoSize);
+file_id_impls!(Animation);
 file_id_impls!(Audio);
 file_id_impls!(Document);
 file_id_impls!(Sticker);
@@ -365,7 +366,7 @@ impl<'a> From<&'a str> for FileRef {
 
 impl<'a> From<String> for FileRef {
     fn from(s: String) -> Self {
-        FileRef { inner: s.clone() }
+        FileRef { inner: s }
     }
 }
 

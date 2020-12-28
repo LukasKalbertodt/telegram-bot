@@ -1,5 +1,4 @@
 use serde::de::DeserializeOwned;
-use serde_json;
 
 use crate::requests::*;
 use crate::types::*;
@@ -30,9 +29,7 @@ impl JsonResponse for JsonTrueToUnitResponse {
     type Raw = True;
     type Type = ();
 
-    fn map(_: Self::Raw) -> Self::Type {
-        ()
-    }
+    fn map(_: Self::Raw) -> Self::Type {}
 }
 
 impl<Resp: JsonResponse> ResponseType for Resp

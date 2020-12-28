@@ -31,7 +31,7 @@ pub enum UpdateKind {
     InlineQuery(InlineQuery),
     //    ChosenInlineResult(ChosenInlineResult),
     #[serde(rename = "callback_query")]
-    CallbackQuery(CallbackQuery),
+    CallbackQuery(Box<CallbackQuery>),
     /// New poll state. Bots receive only updates about stopped polls and polls, which are sent by the bot
     #[serde(rename = "poll")]
     Poll(Poll),
