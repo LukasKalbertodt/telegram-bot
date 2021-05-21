@@ -13,6 +13,7 @@ readme = "../README.md"
 keywords = ["telegram", "bot", "chat", "api"]
 categories = ["api-bindings", "asynchronous"]
 license = "MIT"
+include = ["src/**/*"]
 
 [features]
 openssl = ["hyper-tls"]

@@ -13,6 +13,7 @@ readme = "../README.md"
 keywords = ["telegram", "bot", "chat", "api"]
 categories = ["api-bindings"]
 license = "MIT"
+include = ["src/**/*"]
 
 [dependencies]
 bytes = "1.0"
